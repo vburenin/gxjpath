@@ -14,6 +14,8 @@ type GXJContainerType int8
 var ErrNotFound = errors.New("Path not found")
 var ErrWrongPath = errors.New("Wrong path")
 var ErrInvalidIndex = errors.New("Invalid array index")
+var ErrUnexpectedType = errors.New("Invalid array index")
+var ErrTruncateCast = errors.New("Type has been truncated")
 
 const (
 	GXJMapContainer GXJContainerType = iota
@@ -215,6 +217,62 @@ func LookupRawPath(path string, data interface{}) (interface{}, error) {
 	}
 	return LookupCompiledPath(cp, data)
 }
+
+// LookUpInt64Value looks up a value of the int64 type.
+func LookUpInt64Value(path string, data interface{}) (int64, error) {
+	v, err := CachedLookup(path, data)
+	if  err != nil {
+		return 0, err
+	}
+	switch vv := v.(type) {
+	case int:
+		return int64(vv), nil
+	case int64:
+		return vv, nil
+	case float64:
+		return int64(vv), ErrTruncateCast
+	case float32:
+		return int64(vv), nil
+	}
+	return 0, ErrUnexpectedType
+}
+
+// LookUpStringValue looks up a value of the string type.
+func LookUpStringValue(path string, data interface{}) (string, error) {
+	v, err := CachedLookup(path, data)
+	if  err != nil {
+		return "", err
+	}
+	if s, ok := v.(string); ok {
+		return s, nil
+	}
+	return "", ErrUnexpectedType
+}
+
+// LookUpBoolValue looks up a value of the boolean type.
+func LookUpBoolValue(path string, data interface{}) (bool, error) {
+	v, err := CachedLookup(path, data)
+	if  err != nil {
+		return false, err
+	}
+	if b, ok := v.(bool); ok {
+		return b, nil
+	}
+	return false, ErrUnexpectedType
+}
+
+// LookUpMapToInterface looks up a value of the map[string]interface{} type.
+func LookUpMapToInterface(path string, data interface{}) (map[string]interface{}, error) {
+	v, err := CachedLookup(path, data)
+	if  err != nil {
+		return nil, err
+	}
+	if m, ok := v.(map[string]interface{}); ok {
+		return m, nil
+	}
+	return nil, ErrUnexpectedType
+}
+
 
 // CachedLookup compiles and caches compiled path in the module level dictionary.
 // Lookup result is equal to the previous functions.
