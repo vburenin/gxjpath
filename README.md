@@ -26,6 +26,12 @@ v, err := := gxjpath.LookupRawPath("anyarraykey.\\@-2", data)
 // 1. Key1 -> key2 -> last array element -> first array element-> key3 -> third array element -> key.123
 v, err := := gxjpath.LookupRawPath("key1.key2.@last.@first.key3.@3.key\\.123", data)
 
+# Motive
+People ask me why did I implement this thing again. Here is why:
+  
+  - Performance. A data lookup(especially chached one) is much faster.
+  - I've implemented the same thing in Python, but now I need performance. So, compatibility need.
+  - I can look-up last array element. This is a killer feature for me.
 ```
 
 
