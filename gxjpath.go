@@ -38,7 +38,7 @@ func (s *GXJPathItem) String() string {
 	case GXJSliceContainer:
 		c = "[]" + t
 	}
-	return fmt.Sprintf("Key: %s, Index: %d, container: %s", s.key, s.index, t, c)
+	return fmt.Sprintf("Key: %s, Index: %d, Type: %s, container: %s", s.key, s.index, t, c)
 }
 
 type GXJPath []GXJPathItem
